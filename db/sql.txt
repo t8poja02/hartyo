@@ -1,0 +1,72 @@
+CREATE DATABASE t8poja02;
+USE t8poja02;
+
+CREATE TABLE Asiakas(
+idAsiakas INT NOT NULL AUTO_INCREMENT primary key,
+Etunimi VARCHAR(45) NOT NULL,
+Sukunimi VARCHAR(45) NOT NULL,
+Paikkakunta VARCHAR(45) NOT NULL,
+Postinumero INT NOT NULL,
+Katuosoite VARCHAR(45) NOT NULL,
+HeTu VARCHAR(45) NOT NULL
+) Engine=InnoDB;
+
+INSERT INTO Asiakas VALUES ('1','Janne','Kekkonen','Helsinki','00102','Tie 11 B 21','112345-123F');
+INSERT INTO Asiakas VALUES ('2','Matti','Hepponen','Kulsinki','20103','Katu 12 B 22','222345-123E');
+
+
+CREATE TABLE Tili (
+idTili INT NOT NULL AUTO_INCREMENT primary key,
+IBAN VARCHAR(45) NOT NULL,
+BIC VARCHAR(45) NOT NULL
+) Engine=InnoDB;
+
+INSERT INTO Tili VALUES ('1','OKOYFIHH','FI8537395794072');
+INSERT INTO Tili VALUES ('2','NORDFIHH','FI2537395794073');
+
+GRANT ALL ON t8poja02.* TO 'webuser'@'localhost' IDENTIFIED BY 'webpass';
+
+CREATE TABLE Tili_Asiakas (
+Tili_avattu DATE NOT NULL,
+Asiakas_idAsiakas1 INT NOT NULL,
+Tili_idTili1 INT NOT NULL,
+  PRIMARY KEY (`Asiakas_idAsiakas1`, `Tili_idTili1`),
+  INDEX `fk_Tili_Asiakas_Asiakas1_idx` (`Asiakas_idAsiakas1` ASC) VISIBLE,
+  INDEX `fk_Tili_Asiakas_Tili1_idx` (`Tili_idTili1` ASC) VISIBLE,
+  CONSTRAINT `fk_Tili_Asiakas_Asiakas1`
+    FOREIGN KEY (`Asiakas_idAsiakas1`)
+    REFERENCES `t8poja02`.`Asiakas` (`idAsiakas`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Tili_Asiakas_Tili1`
+    FOREIGN KEY (`Tili_idTili1`)
+    REFERENCES `t8poja02`.`Tili` (`idTili`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `t8poja02`.`Tilitapahtuma`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `t8poja02`.`Tilitapahtuma` (
+  `idTilitapahtuma` INT NOT NULL AUTO_INCREMENT,
+  `Tyyppi` VARCHAR(45) NOT NULL,
+  `Summa` INT NOT NULL,
+  `pvm` DATE NOT NULL,
+  `Viitenro` INT NULL,
+  `Viesti` VARCHAR(45) NULL,
+  `Tili_idTili` INT NOT NULL,
+  PRIMARY KEY (`idTilitapahtuma`),
+  INDEX `fk_Tilitapahtuma_Tili1_idx` (`Tili_idTili` ASC) VISIBLE,
+  CONSTRAINT `fk_Tilitapahtuma_Tili1`
+    FOREIGN KEY (`Tili_idTili`)
+    REFERENCES `t8poja02`.`Tili` (`idTili`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
